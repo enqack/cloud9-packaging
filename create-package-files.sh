@@ -60,27 +60,24 @@ function checkout_node_builds {
 }
 
 function package_cloud9 {
-    rm -rf cloud9-package
-    mkdir -p cloud9-package
+    rm -rf cloud9
+    mkdir -p cloud9
 
     # copy to packaging including submodules
-    cp -a tmp/cloud9/* cloud9-package
+    cp -a tmp/cloud9/* cloud9
 
-    rm cloud9-package/support/node-builds-v4/*
-    cp -a tmp/node-builds-v4/* cloud9-package/support/node-builds-v4
+    rm cloud9/support/node-builds-v4/*
+    cp -a tmp/node-builds-v4/* cloud9/support/node-builds-v4
 
     # remove git directories
-    find cloud9-package -name \.git -delete
+    find cloud9 -name \.git -delete
 }
 
 function apply_patches {
     # apply patches
-    pushd cloud9-package
+    pushd cloud9
     
-    echo "Patch middleware to avoid writing to program directory..."
     patch -p 1 < "../patches/middleware.js.patch"
-
-    echo "Patch startup script"
     patch -p 1 < "../patches/cloud9.sh.patch"
     
     popd

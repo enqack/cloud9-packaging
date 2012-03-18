@@ -1,28 +1,44 @@
 # Maintainer: Leo von Klenze <leo@devel.von-klenze.de>
 pkgname=cloud9
+# TODO set verion
 pkgver=0.6.0.20120318
 pkgrel=1
 pkgdesc="Cloud9 IDE - Your code anywhere, anytime. Open Source Javascript Cloud9 IDE"
 arch=('i686' 'x86_64')
-url="https://github.com/ajaxorg/cloud9"
+url="https://github.com/lepokle/cloud9-packaging"
 license=('GPLv3')
 provides=(cloud9)
 conflicts=(cloud9)
-source=()
+source=(${pkgname}-${pkgver}.tar.gz::${url}/tarball/${pkgver})
 noextract=()
+# TODO set md5sum
 md5sums=()
 install=cloud9.install
 
-build() {
-}
+# TODO set directory
+_tardir=lepokle-cloud9-packaging- 
 
 package() {
+  case `uname -a` in
+    Linux*x86_64*)
+      ARCHITECTURE=x64
+      ;;  
+
+    Linux*i686*)
+      ARCHITECTURE=ia32
+      ;;  
+
+    *) error "Unknown OS"
+      exit 1
+      ;;  
+  esac
+
   install -d "$pkgdir/opt/cloud9"
   install -d "$pkgdir/usr/bin"
 
-  cp -R $srcdir/$_gitname/* $pkgdir/opt/$_gitname
-  cp $srcdir/runcloud9 $pkgdir/opt/$_gitname/bin
-  sed -ie 's/require.paths/\/\/ require.paths/g' $pkgdir/opt/cloud9/support/paths.js   
-  ln -s "/opt/cloud9/bin/runcloud9" "$pkgdir/usr/bin/cloud9"
+  cp -r $srcdir/$_tardir/cloud9/* $pkgdir/opt/$pkgname/
+  msg "Installing modules for $ARCHITECTURE"
+  cp -r $srcdir/$_tardir/additional_modules/$ARCHITECTURE/* $pkgdir/opt/$pkgname/support
+  ln -s "/opt/cloud9/bin/cloud9.sh" "$pkgdir/usr/bin/cloud9"
 } 
 
